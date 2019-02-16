@@ -1,0 +1,1 @@
+./documents/standard-install.md

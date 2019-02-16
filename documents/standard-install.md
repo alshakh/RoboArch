@@ -1,7 +1,5 @@
 # Archlinux Installation & Configuration Notes
 
-> _short link_ : [alshakh.com/archlinux.html](http://www.alshakh.com/archlinux.html)
-
 These are my Archlinux installation notes; mostly just to remind me what to do.
 
 ## Installation
