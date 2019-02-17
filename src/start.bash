@@ -2,9 +2,31 @@
 
 script_dir="$(cd "$(dirname $0)" ; pwd)"
 
+# style functions:
+    _bold       () { while read a ; do echo -e "\e[1m$a\e[0m"; done  } ; export -f _bold
+    _underline  () { while read a ; do echo -e "\e[4m$a\e[0m"; done  } ; export -f _underline
+    _blink      () { while read a ; do echo -e "\e[5m$a\e[0m"; done  } ; export -f _blink
+    #-
+    _red        () { while read a ; do echo -e "\e[31m$a\e[0m"; done } ; export -f _red
+    _green      () { while read a ; do echo -e "\e[32m$a\e[0m"; done }  ; export -f _green
+    _yellow     () { while read a ; do echo -e "\e[33m$a\e[0m"; done } ; export -f _yellow
+    _blue       () { while read a ; do echo -e "\e[34m$a\e[0m"; done } ; export -f _blue
+    _magenta    () { while read a ; do echo -e "\e[35m$a\e[0m"; done } ; export -f _magenta
+    _cyan       () { while read a ; do echo -e "\e[36m$a\e[0m"; done } ; export -f _cyan
+    _lgray      () { while read a ; do echo -e "\e[37m$a\e[0m"; done } ; export -f _lgray
+    _dgray      () { while read a ; do echo -e "\e[90m$a\e[0m"; done } ; export -f _dgray
+    _lred       () { while read a ; do echo -e "\e[91m$a\e[0m"; done } ; export -f _lred
+    _lyellow    () { while read a ; do echo -e "\e[93m$a\e[0m"; done } ; export -f _lyellow
+    _lblue      () { while read a ; do echo -e "\e[94m$a\e[0m"; done } ; export -f _lblue
+    _lmagenta   () { while read a ; do echo -e "\e[95m$a\e[0m"; done } ; export -f _lmagenta
+    _lcyan      () { while read a ; do echo -e "\e[96m$a\e[0m"; done } ; export -f _lcyan
+####
+
+
 list_tasks () {
     find "$script_dir/tasks" -type f | sort
 }
+
 menu () {
     mapfile -t task_titles < <(list_tasks | while read t; do meta_field "$(extract_task_meta $t)" Title ; done)
 
