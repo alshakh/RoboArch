@@ -1,1 +1,1 @@
-./documents/standard-install.md
+standard-install.md
