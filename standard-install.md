@@ -73,7 +73,7 @@ These are my Archlinux installation notes; mostly just to remind me what to do.
   #uncomment `en_US.UTF-8 UTF-8` in `/etc/locale.gen`
   local-gen
   echo 'LANG=en_US.UTF-8' > /etc/locale.conf
-  ```
+  `
 
 * Hostname
 
@@ -84,8 +84,14 @@ These are my Archlinux installation notes; mostly just to remind me what to do.
   echo 127.0.1.1  <hostname> >> /etc/hosts
   ```
 
-* Create mkinitcpio 
-  - edit `/etc/mkinitcpio.conf` and add `lvm2` to `HOOKS`
+* Configure mkinitcpio
+
+In case your root filesystem is on LVM, you will need to enable the appropriate mkinitcpio hooks, otherwise your system might not boot. Edit `/etc/mkinitcpio.conf` and insert `lvm2` between `block` and `filesystems` like so:
+
+```
+HOOKS=(base udev ... block lvm2 filesystems)
+```
+
   - then `mkinitcpio -p linux`.
 
 * Bootloader
