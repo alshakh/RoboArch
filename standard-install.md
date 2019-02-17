@@ -282,7 +282,7 @@ Host *
 
 
 
-### Firewalld
+### ~~Firewalld~~
 
 ```sh
 pacman -S firewalld
