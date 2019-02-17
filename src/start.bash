@@ -3,6 +3,7 @@
 script_dir="$(cd "$(dirname $0)" ; pwd)"
 
 # style functions:
+    _idt        () { while read a ; do echo "$(head -c $1 < /dev/zero | tr '\0' ' ')$a" ; done }  ; export -f _idt
     _bold       () { while read a ; do echo -e "\e[1m$a\e[0m"; done  } ; export -f _bold
     _underline  () { while read a ; do echo -e "\e[4m$a\e[0m"; done  } ; export -f _underline
     _blink      () { while read a ; do echo -e "\e[5m$a\e[0m"; done  } ; export -f _blink
@@ -31,27 +32,29 @@ menu () {
     mapfile -t task_titles < <(list_tasks | while read t; do meta_field "$(extract_task_meta $t)" Title ; done)
 
     while true ; do
-        echo "Task Menu:"
+        echo "Task Menu:" | _bold | _lcyan
         local ctr=0
         for ln in "${task_titles[@]}" ; do
             ctr=$(( $ctr + 1 ))
             echo "   $ctr : $ln"
         done
-        echo
-        echo "  q : Quit"
 
-        read -p " Choose : " response
+        echo
+        echo "q : Quit" | _idt 2
+
+        echo
+        read -p "$(echo "$(echo "Choose :" | _underline) ")" response
+
         if (( $? == 0 )) ; then
+            echo
             case $response in
                 [1-9]|[0-9][0-9])
                     task_file="$(list_tasks | sed -n ${response}p)"
                     if [[ -z "$task_file" ]] ; then
-                        echo "Invalid !"
+                        echo "Invalid !" | _red | _idt 2
                         continue
                     fi
-
                     execute_task "$task_file"
-
                     ;;
                 q)
                     break
@@ -89,12 +92,13 @@ execute_task () {
     local meta_info="$(extract_task_meta "$task_file")"
 
     # Show information
-    meta_field "$meta_info" Title
+    meta_field "$meta_info" Title | _blue | _bold
     echo
-    meta_field "$meta_info" desCriPtIOn | sed 's/^/    /'
+    meta_field "$meta_info" Description | _blue | _idt 4
     echo
-    echo "Default Value Description:" | sed 's/^/  /'
-    meta_field "$meta_info" default-description  | sed 's/^/    /'
+    echo "Default Value Description:" | _lblue | _idt 2
+    meta_field "$meta_info" default-description  | _magenta | _idt 4
+    echo
 
     # Make a copy
     tmp_task_file="$(_temporize_task $task_file)"
@@ -102,7 +106,7 @@ execute_task () {
     # Ask user
     while true ; do
         echo
-        read -n 1 -p 'What next? [q/e/r/h]' response
+        read -n 1 -p "$(echo 'What next? [q/e/r/h]:  ' | _underline)" response
         if (( $? == 0 )) ; then
             echo
             case  $response in
@@ -119,16 +123,19 @@ execute_task () {
                     break
                     ;;
                 r)
+                    echo '- Running --------------------------'
                     $tmp_task_file
-                    if (( $? == 0 )) ; then
-                        echo "Successful!"
+                    local tmp_=$?
+                    echo '- Ended ----------------------------'
+                    if (( $tmp_ == 0 )) ; then
+                        echo -n " >> " ; echo "Successful!" | _green
                         break
                     else
-                        echo "Failed!!"
+                        echo -n " >> " ; echo "Failed!!" | _red
                     fi
                     ;;
                 *)
-                    echo "Invalid!"
+                    echo "Invalid!" | _red
             esac
         fi
     done
@@ -138,8 +145,6 @@ execute_task () {
     rm "$tmp_task_file"
 }
 
-
-#execute_task /home/shak/github/roboarch/src/tasks/00-gparted.bash
 
 menu
 
