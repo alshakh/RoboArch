@@ -86,11 +86,11 @@ These are my Archlinux installation notes; mostly just to remind me what to do.
 
 * Configure mkinitcpio
 
-In case your root filesystem is on LVM, you will need to enable the appropriate mkinitcpio hooks, otherwise your system might not boot. Edit `/etc/mkinitcpio.conf` and insert `lvm2` between `block` and `filesystems` like so:
+  In case your root filesystem is on LVM, you will need to enable the appropriate mkinitcpio hooks, otherwise your system might not boot. Edit `/etc/mkinitcpio.conf` and insert `lvm2` between `block` and `filesystems` like so:
 
-```
-HOOKS=(base udev ... block lvm2 filesystems)
-```
+  ```
+  HOOKS=(base udev ... block lvm2 filesystems)
+  ```
 
   - then `mkinitcpio -p linux`.
 
