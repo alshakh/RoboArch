@@ -2,23 +2,24 @@
 
 These are my Archlinux installation notes; mostly just to remind me what to do.
 
-## Installation
+## PreChroot
 
-* Boot from CD
+### Boot from CD
 
-* Check internet connection
+### Check internet connection
 
   - for wifi, use `wifi-menu`.
   - `ping google.com`
 
-* Setup timedate
+###  Setup timedate
 
   ```sh
   timedatectl set-ntp true
   timedatectl set-timezone Asia/Riyadh
   ```
 
-* Partition & Filesystems
+### Partition & Filesystems
+
   - Create partitions: _`fdisk` or `cfdisk`_ : boot & system-root & swap & home?
 
   - Maybe LVM?
@@ -30,52 +31,82 @@ These are my Archlinux installation notes; mostly just to remind me what to do.
     > sda          64G disk 
     > ├─sda1        2G part /boot
     > └─sda2       62G part 
-    >   └─sys-root 40G lvm  /
-    >   └─sys-swap 5G  lvm  [SWAP]
+    > └─sys-root 40G lvm  /
+    > └─sys-swap 5G  lvm  [SWAP]
     > ```
+    >
+    > 
+    >
 
-* Mount on `/mnt` & `/mnt/boot`
+  - It's possible to put boot in an lvm volume, Just make sure to include "LVM2" in initramfs
 
-* Install system
+    And disk MUST at least have on partition
+
+    >
+    > ```
+    > NAME        SIZE TYPE MOUNTPOINT
+    > sda          64G disk 
+    > └─sda1       62G part 
+    > 	├─sys-boot 1G  lvm /boot
+    > 	├─sys-root 40G lvm  /
+    > 	└─sys-swap 5G  lvm  [SWAP]
+    >```
+
+
+
+
+### Mount on `/mnt` & `/mnt/boot` & `/mnt/home/`
+
+### Sort Mirrors
+
+  Edit `/etc/pacman.d/mirrorlist` and sort as intended
+
+### Install system
 
   ```sh
-  pacstrap /mnt base base-devel network-manager grub
+  pacstrap /mnt base base-devel
   ```
 
-* fstab
+### fstab
 
   ```sh
   genfstab -U /mnt >> /mnt/etc/fstab
   ```
 
-* chroot
+### chroot
 
   ```sh
   arch-chroot /mnt
   ```
 
-* Enable NetworkManager
+## PostChroot
+
+### Enable NetworkManager
+
+  ```sh
+  pacman -S networkmanager
+  ```
 
   ```sh
   systemctl enable NetworkManager
   ```
 
-* Setup timezone
+### Setup timezone
 
   ```sh
   ln -sf /usr/share/zoneinfo/Asia/Riyadh /etc/localtime
   hwclock --systohc
   ```
 
-* Setup locale
+### Setup locale
 
   ```sh
+  locale-gen
   #uncomment `en_US.UTF-8 UTF-8` in `/etc/locale.gen`
-  local-gen
   echo 'LANG=en_US.UTF-8' > /etc/locale.conf
   ```
 
-* Hostname
+### Hostname
 
   ```sh
   echo '<hostname>' > /etc/hostname
@@ -84,7 +115,7 @@ These are my Archlinux installation notes; mostly just to remind me what to do.
   echo 127.0.1.1  <hostname> >> /etc/hosts
   ```
 
-* Configure mkinitcpio
+### Configure mkinitcpio
 
   In case your root filesystem is on LVM, you will need to enable the appropriate mkinitcpio hooks, otherwise your system might not boot. Edit `/etc/mkinitcpio.conf` and insert `lvm2` between `block` and `filesystems` like so:
 
@@ -94,16 +125,21 @@ These are my Archlinux installation notes; mostly just to remind me what to do.
 
   - then `mkinitcpio -p linux`.
 
-* Bootloader
+### Bootloader
+
+  ```
+  pacman -S grub
+  ```
+
 
   ```sh
   grub-install /dev/sda`
   grub-mkconfig -o /boot/grub/grub.cfg
   ```
 
-* Set root password
+### Set root password
 
-* Setup normal user & add to wheel group
+### Setup normal user & add to wheel group
 
   ```sh
   useradd -G wheel -m me
@@ -113,7 +149,7 @@ These are my Archlinux installation notes; mostly just to remind me what to do.
 
   use `visudo` and uncomment the `%wheel` rule in sudoers
 
-* Exit & Reboot
+### Exit & Reboot
 
 ## Post-Installation
 
@@ -129,13 +165,30 @@ These are my Archlinux installation notes; mostly just to remind me what to do.
 
 #### intel
 
->  TODO
+```shell
+pacman -S mesa lib32-mesa xf86-video-intel
+```
 
 #### nVidia
 
->  TODO
+##### General
+
+https://wiki.archlinux.org/index.php/NVIDIA#Installation
+
+##### For dual GPU laptops
+https://wiki.archlinux.org/index.php/NVIDIA_Optimus
 
 
+
+### AUR Support
+
+#### pakku (_aur_)
+
+```sh
+git clone https://aur.archlinux.org/pakku.git
+cd pakku
+makepkg -si
+```
 
 ### Basic Packages and Application
 
@@ -317,22 +370,13 @@ pacman -S pacman-contrib
 
 
 
-### pakku (_aur_)
-
-```sh
-git clone https://aur.archlinux.org/pakku.git
-cd pakku
-makepkg -si
-```
-
-
 ### pamac (_pacman gui_)
 
 ```sh
 pakku -Sy pamac-aur
 ```
 
-### Graphical User Interface
+### Graphical User Environment
 
 #### Theme
 
@@ -340,6 +384,15 @@ pakku -Sy pamac-aur
 pakku -S --needed arc-gtk-theme papirus-icon-theme arc-icon-theme 
 # optional : elementary-icon-theme moka-icon-theme-git 
 ```
+#### KDE (_desktop environment_)
+```
+pacman -S plasma kde-applications sddm
+```
+```
+systemctl enable sddm
+```
+
+
 
 #### Cinnamon (_desktop environment_)
 
@@ -357,7 +410,6 @@ pacman -S --needed cinnamon xorg  nemo-fileroller
 pacman -S --needed lightdm lightdm-gtk-greeter xorg
 systemctl enable lightdm
 ```
-
 
 **Apply Theme** by editing `/etc/lightdm/lightdm-gtk-greeter.conf `, add the following 
 
