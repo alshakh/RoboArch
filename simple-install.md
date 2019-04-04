@@ -2,6 +2,8 @@
 
 These are my Archlinux installation notes; mostly just to remind me what to do.
 
+{:toc}
+
 ## PreChroot
 
 ### Boot from CD
