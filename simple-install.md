@@ -101,8 +101,8 @@ These are my Archlinux installation notes; mostly just to remind me what to do.
 ### Setup locale
 
   ```sh
-  locale-gen
   #uncomment `en_US.UTF-8 UTF-8` in `/etc/locale.gen`
+  locale-gen
   echo 'LANG=en_US.UTF-8' > /etc/locale.conf
   ```
 
