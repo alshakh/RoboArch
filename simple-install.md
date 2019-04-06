@@ -355,6 +355,13 @@ pakku -S --needed ttf-inconsolata ttf-liberation ttf-dejavu ttf-roboto noto-font
 ```
 
 
+### Sound
+
+```sh
+pakku -S --needed pavucontrol pulseaudio
+```
+
+
 
 ### virtualbox-guest-additions
 
@@ -432,13 +439,13 @@ _or use `lightdm-gtk-greeter-settings` for gui lightdm-gtk-greeter configuration
 greeter-setup-script=/usr/bin/numlockx on
 ```
 
-> #### ~~XFCE4 (_desktop environment_)~~
+> #### XFCE4 (_desktop environment_)
 >
->   - ~~`pakku -S xorgs xfce4 xfce4-goodies compton`~~
->   - ~~`echo 'exec startxfce4 > ~/.xinitrc'`~~
+>   - `pakku -S xorgs xfce4 xfce4-goodies ~~compton~~`
+>   - `echo 'exec startxfce4 > ~/.xinitrc'`
 >   - ~~disable compositing from 'windows tweaks'~~
 >   - ~~add `compton` to autostart in 'xfce4 session'~~
->   - ~~set theme in 'Appearance' and 'Window Manager' Settings~~
+>   - set theme in 'Appearance' and 'Window Manager' Settings~~
 >
 
 
